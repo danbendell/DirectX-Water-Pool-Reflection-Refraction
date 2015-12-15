@@ -70,10 +70,10 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	HRESULT result;
 
 	//set the number of vertiecs in the vertex array
-	m_vertexCount = 3;
+	m_vertexCount = 4;
 
 	//Set the number of indices in the index array
-	m_indexCount = 3;
+	m_indexCount = 6;
 
 	//Create the vertex array
 	vertices = new VertexType[m_vertexCount];
@@ -93,16 +93,25 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f); //Bottom Left
 	vertices[0].texture = D3DXVECTOR2(0.0f, 1.0f);
 
-	vertices[1].position = D3DXVECTOR3(0.0f, 1.0f, 0.0f); //Top Middle
-	vertices[1].texture = D3DXVECTOR2(0.5f, 0.0f);
+	vertices[1].position = D3DXVECTOR3(-1.0f, 1.0f, 0.0f); //Top Left
+	vertices[1].texture = D3DXVECTOR2(0.0f, 0.0f);
 
 	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f); //Bottom right
 	vertices[2].texture = D3DXVECTOR2(1.0f, 1.0f);
 
+	vertices[3].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f); //Top Right
+	vertices[3].texture = D3DXVECTOR2(1.0f, 0.0f);
+
+
 	//load the indices arrat with data
 	indices[0] = 0; // bottom left
-	indices[1] = 1; //top middle
+	indices[1] = 1; //top left
 	indices[2] = 2; //bottom right
+
+	//Ensure that the trianlge is being drawing clockwise
+	indices[3] = 1;
+	indices[4] = 3;
+	indices[5] = 2;
 
 	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
