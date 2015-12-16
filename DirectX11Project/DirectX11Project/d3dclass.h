@@ -31,7 +31,13 @@ class D3DClass
 		void GetWorldMatrix(D3DXMATRIX&);
 		void GetOrthoMatrix(D3DXMATRIX&);
 
+		void TurnZBufferOn();
+		void TurnZBufferOff();
+
 		void GetVideoCardInfo(char*, int&);
+
+		ID3D11DepthStencilView* GetDepthStencilView();
+		void SetBackBufferRenderTarget();
 
 	private:
 		bool m_vsync_enabled;
@@ -48,6 +54,8 @@ class D3DClass
 		D3DXMATRIX m_projectionMatrix;
 		D3DXMATRIX m_worldMatrix;
 		D3DXMATRIX m_orthoMatrix;
+		ID3D11DepthStencilState* m_depthDisabledStencilState;
+
 };
 
 #endif

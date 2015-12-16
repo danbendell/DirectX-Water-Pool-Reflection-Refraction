@@ -9,6 +9,8 @@
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
 #include "lightclass.h"
+#include "debugwindowclass.h"
+#include "rendertextureclass.h"
 
 // GLOBALS
 const bool FULL_SCREEN = false;
@@ -26,18 +28,22 @@ class GraphicsClass
 		bool Initialize(int, int, HWND);
 		void Shutdown();
 		bool Frame();
+		bool Render();
 
 	private:
-		bool Render(float);
+		bool RenderToTexture();
+		bool RenderScene();
 
 	private:
 		D3DClass* m_D3D;
 		CameraClass* m_Camera;
 		ModelClass* m_Model;
 		//ColorShaderClass* m_ColorShader;
-		//TextureShaderClass* m_TextureShader;
+		TextureShaderClass* m_TextureShader;
 		LightShaderClass* m_LightShader;
 		LightClass* m_Light;
+		DebugWindowClass* m_DebugWindow;
+		RenderTextureClass* m_RenderTexture;
 };
 
 #endif
