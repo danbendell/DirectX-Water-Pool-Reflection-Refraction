@@ -94,6 +94,7 @@
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
+    <ClCompile Include="reflectionshaderclass.cpp" />
     <ClCompile Include="rendertextureclass.cpp" />
     <ClCompile Include="systemclass.cpp" />
     <ClCompile Include="textureclass.cpp" />
@@ -109,6 +110,7 @@
     <ClInclude Include="lightclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
+    <ClInclude Include="reflectionshaderclass.h" />
     <ClInclude Include="rendertextureclass.h" />
     <ClInclude Include="systemclass.h" />
     <ClInclude Include="textureclass.h" />
@@ -146,6 +148,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="light.ps">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="reflection.vs">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="reflection.ps">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <FileType>Document</FileType>

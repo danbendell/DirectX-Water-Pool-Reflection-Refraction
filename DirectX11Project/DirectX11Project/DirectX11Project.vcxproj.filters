@@ -60,6 +60,9 @@
     <ClCompile Include="textureclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="reflectionshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="systemclass.h">
@@ -101,6 +104,9 @@
     <ClInclude Include="debugwindowclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="reflectionshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="color.vs">
@@ -119,6 +125,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="light.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="reflection.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="reflection.ps">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
