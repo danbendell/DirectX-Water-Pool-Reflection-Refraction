@@ -11,6 +11,7 @@
 #include "lightclass.h"
 #include "debugwindowclass.h"
 #include "rendertextureclass.h"
+#include "reflectionshaderclass.h"
 
 // GLOBALS
 const bool FULL_SCREEN = false;
@@ -44,6 +45,8 @@ class GraphicsClass
 		LightClass* m_Light;
 		DebugWindowClass* m_DebugWindow;
 		RenderTextureClass* m_RenderTexture;
+		ModelClass* m_FloorModel;
+		ReflectionShaderClass* m_ReflectionShader;
 };
 
 #endif
