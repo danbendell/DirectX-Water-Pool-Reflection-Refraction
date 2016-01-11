@@ -34,6 +34,9 @@ class D3DClass
 		void TurnZBufferOn();
 		void TurnZBufferOff();
 
+		void TurnOnAlphaBlending();
+		void TurnOffAlphaBlending();
+
 		void GetVideoCardInfo(char*, int&);
 
 		ID3D11DepthStencilView* GetDepthStencilView();
@@ -55,6 +58,8 @@ class D3DClass
 		D3DXMATRIX m_worldMatrix;
 		D3DXMATRIX m_orthoMatrix;
 		ID3D11DepthStencilState* m_depthDisabledStencilState;
+		ID3D11BlendState* m_alphaEnableBlendingState;
+		ID3D11BlendState* m_alphaDisableBlendingState;
 
 };
 

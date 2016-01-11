@@ -126,9 +126,29 @@ bool SystemClass::Frame()
 
 
 	// Check if the user pressed escape and wants to exit the application.
-	if(m_Input->IsKeyDown(VK_ESCAPE))
+	if (m_Input->IsKeyDown(VK_ESCAPE))
 	{
 		return false;
+	}
+
+	if (m_Input->IsKeyDown(VK_LEFT))
+	{
+		m_Graphics->MoveWallLeft();
+	}
+
+	if (m_Input->IsKeyDown(VK_RIGHT))
+	{
+		m_Graphics->MoveWallRight();
+	}
+
+	if (m_Input->IsKeyDown(VK_UP))
+	{
+		m_Graphics->MoveBallForward();
+	}
+
+	if (m_Input->IsKeyDown(VK_DOWN))
+	{
+		m_Graphics->MoveBallBackwards();
 	}
 
 	// Do the frame processing for the graphics object.

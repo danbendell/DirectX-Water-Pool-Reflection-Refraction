@@ -63,6 +63,18 @@
     <ClCompile Include="reflectionshaderclass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="watershaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="refractionshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fireshaderclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="firemodelclass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="systemclass.h">
@@ -107,6 +119,18 @@
     <ClInclude Include="reflectionshaderclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="watershaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="refractionshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fireshaderclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="firemodelclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="color.vs">
@@ -131,6 +155,24 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="reflection.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="refraction.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="refraction.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="water.vs">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="water.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="fire.ps">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="fire.vs">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

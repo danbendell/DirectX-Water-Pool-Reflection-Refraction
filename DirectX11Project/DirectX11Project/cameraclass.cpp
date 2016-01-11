@@ -96,6 +96,7 @@ void CameraClass::RenderReflection(float height)
 {
 	D3DXVECTOR3 up, position, lookAt;
 	float radians;
+	float oneRadian = 0.0174532925f;
 
 
 	// Setup the vector that points upwards.
@@ -110,7 +111,7 @@ void CameraClass::RenderReflection(float height)
 	position.z = m_positionZ;
 
 	// Calculate the rotation in radians.
-	radians = m_rotationY * 0.0174532925f;
+	radians = m_rotationY * oneRadian;
 
 	// Setup where the camera is looking.
 	lookAt.x = sinf(radians) + m_positionX;

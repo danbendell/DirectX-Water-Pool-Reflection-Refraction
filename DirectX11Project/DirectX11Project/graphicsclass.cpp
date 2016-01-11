@@ -8,16 +8,24 @@ GraphicsClass::GraphicsClass()
 {
 	m_D3D = 0;
 	m_Camera = 0;
+	m_Input = 0;
+	m_Light = 0;
+	//Models
+	m_FireModel = 0;
 	m_GroundModel = 0;
 	m_WallModel = 0;
 	m_BathModel = 0;
 	m_WaterModel = 0;
-	m_Light = 0;
+	m_BallModel = 0;
+	m_FirePlaceModel = 0;
+	//Textures
 	m_RefractionTexture = 0;
 	m_ReflectionTexture = 0;
+	//Shaders
 	m_LightShader = 0;
 	m_RefractionShader = 0;
 	m_WaterShader = 0;
+	m_FireShader = 0;
 }
 
 
@@ -55,6 +63,29 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera = new CameraClass;
 	if (!m_Camera)
 	{
+		return false;
+	}
+
+	m_Input = new InputClass;
+	if (!m_Input)
+	{
+		return false;
+	}
+	m_Input->Initialize();
+
+	// Create the ground model object.
+	m_FireModel = new FireModelClass;
+	if (!m_FireModel)
+	{
+		return false;
+	}
+
+	// Initialize the model object.
+	result = m_FireModel->Initialize(m_D3D->GetDevice(), "../DirectX11Project/data/square.txt", L"../DirectX11Project/data/fire01.dds",
+		L"../DirectX11Project/data/noise01.dds", L"../DirectX11Project/data/alpha01.dds");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -96,7 +127,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	// Initialize the bath model object.
-	result = m_BathModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/marble01.dds", "../DirectX11Project/data/bath.txt");
+	result = m_BathModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/pool_large.dds", "../DirectX11Project/data/bath.txt");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the bath model object.", L"Error", MB_OK);
@@ -113,6 +144,34 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the water model object.
 	result = m_WaterModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/water01.dds", "../DirectX11Project/data/water.txt");
 	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	// Create the water model object.
+	m_BallModel = new ModelClass;
+	if (!m_BallModel)
+	{
+		return false;
+	}
+
+	// Initialize the water model object.
+	result = m_BallModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/basketball01.dds", "../DirectX11Project/data/sphere.txt");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
+		return false;
+	}
+
+	m_FirePlaceModel = new ModelClass;
+	if(!m_FirePlaceModel) 
+	{
+		return false;
+	}
+
+	result = m_FirePlaceModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/rock01.dds", "../DirectX11Project/data/fire_place.txt");
+	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
 		return false;
@@ -205,6 +264,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Create the fire shader object.
+	m_FireShader = new FireShaderClass;
+	if (!m_FireShader)
+	{
+		return false;
+	}
+
+	// Initialize the fire shader object.
+	result = m_FireShader->Initialize(m_D3D->GetDevice(), hwnd);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the fire shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Set the height of the water.
 	m_waterHeight = 2.75f;
 
@@ -239,6 +313,38 @@ void GraphicsClass::Shutdown()
 		m_LightShader->Shutdown();
 		delete m_LightShader;
 		m_LightShader = 0;
+	}
+
+	// Release the fire shader object.
+	if (m_FireShader)
+	{
+		m_FireShader->Shutdown();
+		delete m_FireShader;
+		m_FireShader = 0;
+	}
+
+	// Release the model object.
+	if (m_FireModel)
+	{
+		m_FireModel->Shutdown();
+		delete m_FireModel;
+		m_FireModel = 0;
+	}
+
+	// Release the model object.
+	if (m_BallModel)
+	{
+		m_BallModel->Shutdown();
+		delete m_BallModel;
+		m_BallModel = 0;
+	}
+
+	//Release the fireplace model object
+	if(m_FirePlaceModel)
+	{
+		m_FirePlaceModel->Shutdown();
+		delete m_FirePlaceModel;
+		m_FirePlaceModel = 0;
 	}
 
 	// Release the reflection render to texture object.
@@ -295,7 +401,7 @@ void GraphicsClass::Shutdown()
 		delete m_GroundModel;
 		m_GroundModel = 0;
 	}
-
+	
 	// Release the camera object.
 	if (m_Camera)
 	{
@@ -314,6 +420,34 @@ void GraphicsClass::Shutdown()
 	return;
 }
 
+void GraphicsClass::MoveWallLeft()
+{
+	m_wallXTranslation -= 0.025f;
+	m_ballXTranslation -= 0.025f;
+	
+	return;
+}
+
+void GraphicsClass::MoveWallRight()
+{
+	m_wallXTranslation += 0.025f;
+	m_ballXTranslation += 0.025f;
+	return;
+}
+
+void GraphicsClass::MoveBallForward()
+{
+	m_ballZTranslation += 0.025f;
+
+	return;
+}
+
+void GraphicsClass::MoveBallBackwards()
+{
+	m_ballZTranslation -= 0.025f;
+
+	return;
+}
 
 bool GraphicsClass::Frame()
 {
@@ -325,8 +459,8 @@ bool GraphicsClass::Frame()
 	}
 
 	// Set the position and rotation of the camera.
-	m_Camera->SetPosition(-10.0f, 6.0f, -10.0f);
-	m_Camera->SetRotation(0.0f, 45.0f, 0.0f);
+	m_Camera->SetPosition(10.0f, 6.0f, -10.0f);
+	m_Camera->SetRotation(0.0f, -45.0f, 0.0f);
 
 	return true;
 }
@@ -336,7 +470,7 @@ bool GraphicsClass::Render()
 {
 	bool result;
 
-
+	
 	// Render the refraction of the scene to a texture.
 	result = RenderRefractionToTexture();
 	if (!result)
@@ -370,7 +504,7 @@ bool GraphicsClass::RenderRefractionToTexture()
 
 
 	// Setup a clipping plane based on the height of the water to clip everything above it.
-	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_waterHeight + 0.1f);
+	clipPlane = D3DXVECTOR4(0.0f, -1.0f, 0.0f, m_waterHeight);
 
 	// Set the render target to be the refraction render to texture.
 	m_RefractionTexture->SetRenderTarget(m_D3D->GetDeviceContext(), m_D3D->GetDepthStencilView());
@@ -387,7 +521,7 @@ bool GraphicsClass::RenderRefractionToTexture()
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
 	// Translate to where the bath model will be rendered.
-	D3DXMatrixTranslation(&worldMatrix, 0.0f, 2.0f, 0.0f);
+	D3DXMatrixTranslation(&worldMatrix, 0.0f, 2.2f, 0.0f);
 
 	// Put the bath model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_BathModel->Render(m_D3D->GetDeviceContext());
@@ -426,19 +560,42 @@ bool GraphicsClass::RenderReflectionToTexture()
 	// Get the camera reflection view matrix instead of the normal view matrix.
 	reflectionViewMatrix = m_Camera->GetReflectionViewMatrix();
 
+	//// Get the world and projection matrices from the d3d object.
+	//m_D3D->GetWorldMatrix(worldMatrix);
+	//m_D3D->GetProjectionMatrix(projectionMatrix);
+
+	//// Translate to where the wall model will be rendered.
+	//D3DXMatrixTranslation(&worldMatrix, m_wallXTranslation, 6.0f, 8.0f);
+
+	//// Put the wall model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//m_WallModel->Render(m_D3D->GetDeviceContext());
+
+	//// Render the wall model using the light shader and the reflection view matrix.
+	//result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), worldMatrix, reflectionViewMatrix,
+	//	projectionMatrix, m_WallModel->GetTexture(), m_Light->GetDirection(),
+	//	m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
 	// Get the world and projection matrices from the d3d object.
 	m_D3D->GetWorldMatrix(worldMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Translate to where the wall model will be rendered.
-	D3DXMatrixTranslation(&worldMatrix, 0.0f, 6.0f, 8.0f);
+	D3DXMATRIX matScale;
+	D3DXMATRIX matTranslate;
+	D3DXMatrixScaling(&matScale, 0.25f, 0.25f, 0.25f);
+	D3DXMatrixTranslation(&matTranslate, m_ballXTranslation, 5.0f, m_ballZTranslation + 6.0f);
+
+	worldMatrix = matScale * matTranslate;
 
 	// Put the wall model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_WallModel->Render(m_D3D->GetDeviceContext());
+	m_BallModel->Render(m_D3D->GetDeviceContext());
 
 	// Render the wall model using the light shader and the reflection view matrix.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), worldMatrix, reflectionViewMatrix,
-		projectionMatrix, m_WallModel->GetTexture(), m_Light->GetDirection(),
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_BallModel->GetIndexCount(), worldMatrix, reflectionViewMatrix,
+		projectionMatrix, m_BallModel->GetTexture(), m_Light->GetDirection(),
 		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
 	if (!result)
 	{
@@ -456,7 +613,36 @@ bool GraphicsClass::RenderScene()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, reflectionMatrix;
 	bool result;
+	D3DXVECTOR3 scrollSpeeds, scales;
+	D3DXVECTOR2 distortion1, distortion2, distortion3;
+	float distortionScale, distortionBias;
+	static float frameTime = 0.0f;
+	D3DXVECTOR3 transCoords;
+	D3DXMATRIX modelScale;
+	D3DXMATRIX modelTranslate;
+	D3DXMATRIX modelRotation;
 
+	// Increment the frame time counter.
+	frameTime += 0.01f;
+	if (frameTime > 1000.0f)
+	{
+		frameTime = 0.0f;
+	}
+
+	// Set the three scrolling speeds for the three different noise textures.
+	scrollSpeeds = D3DXVECTOR3(1.3f, 2.1f, 2.3f);
+
+	// Set the three scales which will be used to create the three different noise octave textures.
+	scales = D3DXVECTOR3(1.0f, 2.0f, 3.0f);
+
+	// Set the three different x and y distortion factors for the three different noise textures.
+	distortion1 = D3DXVECTOR2(0.1f, 0.2f);
+	distortion2 = D3DXVECTOR2(0.1f, 0.3f);
+	distortion3 = D3DXVECTOR2(0.1f, 0.1f);
+
+	// The the scale and bias of the texture coordinate sampling perturbation.
+	distortionScale = 0.8f;
+	distortionBias = 0.5f;
 
 	// Clear the buffers to begin the scene.
 	m_D3D->BeginScene(0.5f, 0.5f, 1.0f, 1.0f);
@@ -469,53 +655,74 @@ bool GraphicsClass::RenderScene()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	// Translate to where the ground model will be rendered.
-	D3DXMatrixTranslation(&worldMatrix, 0.0f, 1.0f, 0.0f);
+	////Turn on alpha blending for the fire transparency.
+	//m_D3D->TurnOnAlphaBlending();
 
-	// Put the ground model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_GroundModel->Render(m_D3D->GetDeviceContext());
+	//D3DXMatrixTranslation(&worldMatrix, 0.0f, 5.0f, -1.0f);
 
-	// Render the ground model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_GroundModel->GetIndexCount(), worldMatrix, viewMatrix,
-		projectionMatrix, m_GroundModel->GetTexture(), m_Light->GetDirection(),
-		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
+	//// Put the square model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	//m_FireModel->Render(m_D3D->GetDeviceContext());
+
+	//// Render the square model using the fire shader.
+	//result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_FireModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+	//	m_FireModel->GetTexture1(), m_FireModel->GetTexture2(), m_FireModel->GetTexture3(), frameTime, scrollSpeeds,
+	//	scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
+	//// Turn off alpha blending.
+	//m_D3D->TurnOffAlphaBlending();
+
+	//Render the Floor Model
+	transCoords = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	result = RenderModel(m_GroundModel, transCoords, worldMatrix, viewMatrix, projectionMatrix);
 	if (!result)
 	{
 		return false;
 	}
 
+	////Render the Wall Model
+	//transCoords = D3DXVECTOR3(m_wallXTranslation, 6.0f,2 8.0f);
+	//result = RenderModel(m_WallModel, transCoords, worldMatrix, viewMatrix, projectionMatrix);
+	//if (!result)
+	//{
+	//	return false;
+	//}
+
+	/*transCoords = D3DXVECTOR3(0.0f, 4.0f, 0.0f);
+	result = RenderModel(m_FirePlaceModel, transCoords, worldMatrix, viewMatrix, projectionMatrix);
+	if (!result)
+	{
+		return false;
+	}*/
+
 	// Reset the world matrix.
 	m_D3D->GetWorldMatrix(worldMatrix);
 
-	// Translate to where the wall model will be rendered.
-	D3DXMatrixTranslation(&worldMatrix, 0.0f, 6.0f, 8.0f);
+	D3DXMatrixScaling(&modelScale, 0.25f, 0.25f, 0.25f);
+	D3DXMatrixTranslation(&modelTranslate, m_ballXTranslation, 5.0f, m_ballZTranslation + 6.0f);
+
+	worldMatrix = modelScale * modelTranslate;
 
 	// Put the wall model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_WallModel->Render(m_D3D->GetDeviceContext());
+	m_BallModel->Render(m_D3D->GetDeviceContext());
 
 	// Render the wall model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_WallModel->GetIndexCount(), worldMatrix, viewMatrix,
-		projectionMatrix, m_WallModel->GetTexture(), m_Light->GetDirection(),
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_BallModel->GetIndexCount(), worldMatrix, viewMatrix,
+		projectionMatrix, m_BallModel->GetTexture(), m_Light->GetDirection(),
 		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
 	if (!result)
 	{
 		return false;
 	}
 
-	// Reset the world matrix.
-	m_D3D->GetWorldMatrix(worldMatrix);
 
-	// Translate to where the bath model will be rendered.
-	D3DXMatrixTranslation(&worldMatrix, 0.0f, 2.0f, 0.0f);
-
-	// Put the bath model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	m_BathModel->Render(m_D3D->GetDeviceContext());
-
-	// Render the bath model using the light shader.
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_BathModel->GetIndexCount(), worldMatrix, viewMatrix,
-		projectionMatrix, m_BathModel->GetTexture(), m_Light->GetDirection(),
-		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
-	if (!result)
+	//Render the Bath Model
+	transCoords = D3DXVECTOR3(0.0f, 2.3f, 0.0f);
+	result = RenderModel(m_BathModel, transCoords, worldMatrix, viewMatrix, projectionMatrix);
+	if(!result)
 	{
 		return false;
 	}
@@ -546,4 +753,25 @@ bool GraphicsClass::RenderScene()
 	m_D3D->EndScene();
 
 	return true;
+}
+
+bool GraphicsClass::RenderModel(ModelClass* model, D3DXVECTOR3 translationCoord, D3DXMATRIX worldMatrix, D3DXMATRIX viewMatrix, D3DXMATRIX projectionMatrix)
+{
+	bool result;
+
+	// Reset the world matrix.
+	m_D3D->GetWorldMatrix(worldMatrix); 
+
+	// Translate to where the bath model will be rendered.
+	D3DXMatrixTranslation(&worldMatrix, translationCoord.x, translationCoord.y, translationCoord.z);
+
+	// Put the bath model vertex and index buffers on the graphics pipeline to prepare them for drawing.
+	model->Render(m_D3D->GetDeviceContext());
+
+	// Render the bath model using the light shader.
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix,
+		projectionMatrix, model->GetTexture(), m_Light->GetDirection(),
+		m_Light->GetAmbientColor(), m_Light->GetDiffuseColor());
+
+	return result;
 }
