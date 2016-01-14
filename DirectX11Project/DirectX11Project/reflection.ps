@@ -15,19 +15,15 @@ float4 ReflectionPixelShader(PixelInputType input) : SV_TARGET
 	float2 reflectTexCoord;
 	float4 reflectionColor;
 	float4 color;
+	float flipReflection = 0.5f;
+	float distanceReflection = 2.0f;
 
-	//Sample the texture pixel at this location
 	textureColor = shaderTexture.Sample(SampleType, input.tex);
-	
-	//Calculate the projected reflection texture coordinates
-	reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
-	reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
+	reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / distanceReflection + flipReflection;
+	reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / distanceReflection + flipReflection;
 
-	//Sample the texture pixel from the reflection texture using the projected texture coorfinates
-	reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
 
-	//Do a linear interpoilation between the two textures for a blend effect
-	color = lerp(textureColor, reflectionColor, 0.15f);
+	reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord); 
 
-	return color;
+	return lerp(textureColor, reflectionColor, 0.2f);;
 }

@@ -27,33 +27,26 @@ float4 WaterPixelShader(PixelInputType input) : SV_TARGET
 	float4 reflectionColor;
 	float4 refractionColor;
 	float4 color;
+	float flipWaterRefracReflec = 0.5f;
+	float distanceWaterRefracReflec = 2.0f;
 
-	//Move the position the water normal is sampled from to simulate moving water
+	//Move the position the water normal
 	input.tex.y += waterTranslation;
 
-	//Calculate the projected reflection texture coordinates
-	reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / 2.0f + 0.5f;
-	reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / 2.0f + 0.5f;
+	reflectTexCoord.x = input.reflectionPosition.x / input.reflectionPosition.w / distanceWaterRefracReflec + flipWaterRefracReflec;
+	reflectTexCoord.y = -input.reflectionPosition.y / input.reflectionPosition.w / distanceWaterRefracReflec + flipWaterRefracReflec;
+	refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / distanceWaterRefracReflec + flipWaterRefracReflec;
+	refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / distanceWaterRefracReflec + flipWaterRefracReflec;
 
-	//Calculate the projected refraction texture coordinates
-	refractTexCoord.x = input.refractionPosition.x / input.refractionPosition.w / 2.0f + 0.5f;
-	refractTexCoord.y = -input.refractionPosition.y / input.refractionPosition.w / 2.0f + 0.5;
-
-	//sample the noraml from the normal map texture
 	normalMap = normalTexture.Sample(SampleType, input.tex);
-
-	//Expand the range of the normal from (0,1) to (-1,+1)
 	normal = (normalMap.xyz * 2.0f) - 1.0f;
 	
-	// Re-position the texture coordinate sampling position by the normal map value to simulate the rippling wave effect.
 	reflectTexCoord = reflectTexCoord + (normal.xy * reflectRefractScale);
 	refractTexCoord = refractTexCoord + (normal.xy * reflectRefractScale);
-
-	// Sample the texture pixels from the textures using the updated texture coordinates.
     reflectionColor = reflectionTexture.Sample(SampleType, reflectTexCoord);
     refractionColor = refractionTexture.Sample(SampleType, refractTexCoord);
 
-	//Combine the reflection and refraction results for the final color
+	//Mix reflection and refraction colors
 	color = lerp(reflectionColor, refractionColor, 0.6f);
 
 	return color;

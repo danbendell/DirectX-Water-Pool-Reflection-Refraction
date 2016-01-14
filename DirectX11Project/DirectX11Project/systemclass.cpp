@@ -151,6 +151,18 @@ bool SystemClass::Frame()
 		m_Graphics->MoveBallBackwards();
 	}
 
+	//Key A
+	if (m_Input->IsKeyDown(0x41))
+	{
+		m_Graphics->IncreaseWaterIntensity();
+	}
+	
+	//Key S
+	if (m_Input->IsKeyDown(0x53))
+	{
+		m_Graphics->DecreaseWaterIntensity();
+	}
+
 	// Do the frame processing for the graphics object.
 	result = m_Graphics->Frame();
 	if(!result)

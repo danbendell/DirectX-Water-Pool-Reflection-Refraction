@@ -18,6 +18,7 @@ GraphicsClass::GraphicsClass()
 	m_WaterModel = 0;
 	m_BallModel = 0;
 	m_FirePlaceModel = 0;
+	m_SkyboxModel = 0;
 	//Textures
 	m_RefractionTexture = 0;
 	m_ReflectionTexture = 0;
@@ -26,6 +27,7 @@ GraphicsClass::GraphicsClass()
 	m_RefractionShader = 0;
 	m_WaterShader = 0;
 	m_FireShader = 0;
+
 }
 
 
@@ -71,47 +73,28 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
+
 	m_Input->Initialize();
 
-	// Create the ground model object.
-	m_FireModel = new FireModelClass;
-	if (!m_FireModel)
-	{
-		return false;
-	}
-
-	// Initialize the model object.
-	result = m_FireModel->Initialize(m_D3D->GetDevice(), "../DirectX11Project/data/square.txt", L"../DirectX11Project/data/fire01.dds",
-		L"../DirectX11Project/data/noise01.dds", L"../DirectX11Project/data/alpha01.dds");
-	if (!result)
-	{
-		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
-		return false;
-	}
-
-	// Create the ground model object.
 	m_GroundModel = new ModelClass;
 	if (!m_GroundModel)
 	{
 		return false;
 	}
 
-	// Initialize the ground model object.
-	result = m_GroundModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/ground01.dds", "../DirectX11Project/data/ground.txt");
+	result = m_GroundModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/wall01.dds", "../DirectX11Project/data/ground.txt");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the ground model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	// Create the wall model object.
 	m_WallModel = new ModelClass;
 	if (!m_WallModel)
 	{
 		return false;
 	}
 
-	// Initialize the wall model object.
 	result = m_WallModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/wall01.dds", "../DirectX11Project/data/wall.txt");
 	if (!result)
 	{
@@ -119,14 +102,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the bath model object.
 	m_BathModel = new ModelClass;
 	if (!m_BathModel)
 	{
 		return false;
 	}
 
-	// Initialize the bath model object.
 	result = m_BathModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/pool_large.dds", "../DirectX11Project/data/bath.txt");
 	if (!result)
 	{
@@ -134,29 +115,25 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	// Create the water model object.
 	m_WaterModel = new ModelClass;
 	if (!m_WaterModel)
 	{
 		return false;
 	}
 
-	// Initialize the water model object.
-	result = m_WaterModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/water01.dds", "../DirectX11Project/data/water.txt");
+	result = m_WaterModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/water02.dds", "../DirectX11Project/data/water.txt");
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	// Create the water model object.
 	m_BallModel = new ModelClass;
 	if (!m_BallModel)
 	{
 		return false;
 	}
 
-	// Initialize the water model object.
 	result = m_BallModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/basketball01.dds", "../DirectX11Project/data/sphere.txt");
 	if (!result)
 	{
@@ -177,8 +154,21 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	m_SkyboxModel = new ModelClass;
+	if (!m_SkyboxModel)
+	{
+		return false;
+	}
+
+	result = m_SkyboxModel->Initialize(m_D3D->GetDevice(), L"../DirectX11Project/data/rock01.dds", "../DirectX11Project/data/inverted_sphere.txt");
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the water model object.", L"Error", MB_OK);
+		return false;
+	}
+
 	// Create the light object.
-	m_Light = new LightClass;
+	m_Light = new LightingClass;
 	if (!m_Light)
 	{
 		return false;
@@ -285,13 +275,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	// Initialize the position of the water.
 	m_waterTranslation = 0.0f;
 
+	// Initalize the water intensity
+	m_waterIntensity = 0.01f;
+
 	return true;
 }
 
 
 void GraphicsClass::Shutdown()
 {
-	// Release the water shader object.
 	if (m_WaterShader)
 	{
 		m_WaterShader->Shutdown();
@@ -299,7 +291,6 @@ void GraphicsClass::Shutdown()
 		m_WaterShader = 0;
 	}
 
-	// Release the refraction shader object.
 	if (m_RefractionShader)
 	{
 		m_RefractionShader->Shutdown();
@@ -307,7 +298,6 @@ void GraphicsClass::Shutdown()
 		m_RefractionShader = 0;
 	}
 
-	// Release the light shader object.
 	if (m_LightShader)
 	{
 		m_LightShader->Shutdown();
@@ -315,7 +305,6 @@ void GraphicsClass::Shutdown()
 		m_LightShader = 0;
 	}
 
-	// Release the fire shader object.
 	if (m_FireShader)
 	{
 		m_FireShader->Shutdown();
@@ -323,15 +312,6 @@ void GraphicsClass::Shutdown()
 		m_FireShader = 0;
 	}
 
-	// Release the model object.
-	if (m_FireModel)
-	{
-		m_FireModel->Shutdown();
-		delete m_FireModel;
-		m_FireModel = 0;
-	}
-
-	// Release the model object.
 	if (m_BallModel)
 	{
 		m_BallModel->Shutdown();
@@ -339,7 +319,6 @@ void GraphicsClass::Shutdown()
 		m_BallModel = 0;
 	}
 
-	//Release the fireplace model object
 	if(m_FirePlaceModel)
 	{
 		m_FirePlaceModel->Shutdown();
@@ -347,7 +326,6 @@ void GraphicsClass::Shutdown()
 		m_FirePlaceModel = 0;
 	}
 
-	// Release the reflection render to texture object.
 	if (m_ReflectionTexture)
 	{
 		m_ReflectionTexture->Shutdown();
@@ -355,7 +333,6 @@ void GraphicsClass::Shutdown()
 		m_ReflectionTexture = 0;
 	}
 
-	// Release the refraction render to texture object.
 	if (m_RefractionTexture)
 	{
 		m_RefractionTexture->Shutdown();
@@ -363,14 +340,12 @@ void GraphicsClass::Shutdown()
 		m_RefractionTexture = 0;
 	}
 
-	// Release the light object.
 	if (m_Light)
 	{
 		delete m_Light;
 		m_Light = 0;
 	}
 
-	// Release the water model object.
 	if (m_WaterModel)
 	{
 		m_WaterModel->Shutdown();
@@ -378,7 +353,6 @@ void GraphicsClass::Shutdown()
 		m_WaterModel = 0;
 	}
 
-	// Release the bath model object.
 	if (m_BathModel)
 	{
 		m_BathModel->Shutdown();
@@ -386,7 +360,6 @@ void GraphicsClass::Shutdown()
 		m_BathModel = 0;
 	}
 
-	// Release the wall model object.
 	if (m_WallModel)
 	{
 		m_WallModel->Shutdown();
@@ -394,7 +367,6 @@ void GraphicsClass::Shutdown()
 		m_WallModel = 0;
 	}
 
-	// Release the ground model object.
 	if (m_GroundModel)
 	{
 		m_GroundModel->Shutdown();
@@ -402,14 +374,12 @@ void GraphicsClass::Shutdown()
 		m_GroundModel = 0;
 	}
 	
-	// Release the camera object.
 	if (m_Camera)
 	{
 		delete m_Camera;
 		m_Camera = 0;
 	}
 
-	// Release the D3D object.
 	if (m_D3D)
 	{
 		m_D3D->Shutdown();
@@ -446,6 +416,22 @@ void GraphicsClass::MoveBallBackwards()
 {
 	m_ballZTranslation -= 0.025f;
 
+	return;
+}
+
+void GraphicsClass::IncreaseWaterIntensity()
+{
+	if (m_waterIntensity >= 0.1f) return;
+	m_waterIntensity += 0.001f;
+
+	return;
+}
+
+void GraphicsClass::DecreaseWaterIntensity()
+{
+	if (m_waterIntensity <= 0.0f) return;
+	m_waterIntensity -= 0.001f;
+	
 	return;
 }
 
@@ -655,26 +641,6 @@ bool GraphicsClass::RenderScene()
 	m_Camera->GetViewMatrix(viewMatrix);
 	m_D3D->GetProjectionMatrix(projectionMatrix);
 
-	////Turn on alpha blending for the fire transparency.
-	//m_D3D->TurnOnAlphaBlending();
-
-	//D3DXMatrixTranslation(&worldMatrix, 0.0f, 5.0f, -1.0f);
-
-	//// Put the square model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-	//m_FireModel->Render(m_D3D->GetDeviceContext());
-
-	//// Render the square model using the fire shader.
-	//result = m_FireShader->Render(m_D3D->GetDeviceContext(), m_FireModel->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
-	//	m_FireModel->GetTexture1(), m_FireModel->GetTexture2(), m_FireModel->GetTexture3(), frameTime, scrollSpeeds,
-	//	scales, distortion1, distortion2, distortion3, distortionScale, distortionBias);
-	//if (!result)
-	//{
-	//	return false;
-	//}
-
-	//// Turn off alpha blending.
-	//m_D3D->TurnOffAlphaBlending();
-
 	//Render the Floor Model
 	transCoords = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	result = RenderModel(m_GroundModel, transCoords, worldMatrix, viewMatrix, projectionMatrix);
@@ -743,7 +709,7 @@ bool GraphicsClass::RenderScene()
 	result = m_WaterShader->Render(m_D3D->GetDeviceContext(), m_WaterModel->GetIndexCount(), worldMatrix, viewMatrix,
 		projectionMatrix, reflectionMatrix, m_ReflectionTexture->GetShaderResourceView(),
 		m_RefractionTexture->GetShaderResourceView(), m_WaterModel->GetTexture(),
-		m_waterTranslation, 0.01f);
+		m_waterTranslation, m_waterIntensity);
 	if (!result)
 	{
 		return false;

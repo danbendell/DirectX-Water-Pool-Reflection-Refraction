@@ -10,7 +10,7 @@
 #include "colorshaderclass.h"
 #include "textureshaderclass.h"
 #include "lightshaderclass.h"
-#include "lightclass.h"
+#include "LightingClass.h"
 #include "debugwindowclass.h"
 #include "rendertextureclass.h"
 #include "reflectionshaderclass.h"
@@ -40,6 +40,8 @@ class GraphicsClass
 		void MoveWallRight();
 		void MoveBallForward();
 		void MoveBallBackwards();
+		void IncreaseWaterIntensity();
+		void DecreaseWaterIntensity();
 
 	private:
 		bool RenderModel(ModelClass*, D3DXVECTOR3, D3DXMATRIX, D3DXMATRIX, D3DXMATRIX);
@@ -51,14 +53,14 @@ class GraphicsClass
 	private:
 		D3DClass* m_D3D;
 		CameraClass* m_Camera;
-		ModelClass *m_GroundModel, *m_WallModel, *m_BathModel, *m_WaterModel, *m_BallModel, *m_FirePlaceModel;
+		ModelClass *m_GroundModel, *m_WallModel, *m_BathModel, *m_WaterModel, *m_BallModel, *m_FirePlaceModel, *m_SkyboxModel;
 		FireModelClass* m_FireModel;
 		//ColorShaderClass* m_ColorShader;
 		TextureShaderClass* m_TextureShader;
 		LightShaderClass* m_LightShader;
 		RefractionShaderClass* m_RefractionShader;
 		WaterShaderClass* m_WaterShader;
-		LightClass* m_Light;
+		LightingClass* m_Light;
 		DebugWindowClass* m_DebugWindow;
 		RenderTextureClass *m_RefractionTexture, *m_ReflectionTexture;
 		ModelClass* m_FloorModel;
@@ -68,6 +70,7 @@ class GraphicsClass
 
 		float m_waterHeight, m_waterTranslation;
 		float m_wallXTranslation, m_ballXTranslation, m_ballZTranslation;
+		float m_waterIntensity;
 };
 
 #endif

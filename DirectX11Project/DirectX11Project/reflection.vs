@@ -28,19 +28,17 @@ PixelInputType ReflectionVertexShader(VertexInputType input)
 	PixelInputType output;
 	matrix reflectProjectWorld;
 
-	//Change the position vector to be 4 units from proper matrix calculations
 	output.position = mul(input.position, worldMatrix);
 	output.position = mul(output.position, viewMatrix);
 	output.position = mul(output.position, projectionMatrix);
-
-	//Store the texture coorfinates for the pixel shader
 	output.tex = input.tex;
 
-	//Create the reflection projection worl matrix
+
 	reflectProjectWorld = mul(reflectionMatrix, projectionMatrix);
 	reflectProjectWorld = mul(worldMatrix, reflectProjectWorld);
 
-	//Calculate the input position agaisnt the reflectProjectWorld matrix
+	//output.reflectionPosition = worldMatrix
+	//output.reflectionPosition = mul(input.position, worldMatrix);
 	output.reflectionPosition = mul(input.position, reflectProjectWorld);
 
 	return output;

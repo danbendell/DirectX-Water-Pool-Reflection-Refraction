@@ -92,7 +92,7 @@
     <ClCompile Include="fireshaderclass.cpp" />
     <ClCompile Include="graphicsclass.cpp" />
     <ClCompile Include="inputclass.cpp" />
-    <ClCompile Include="lightclass.cpp" />
+    <ClCompile Include="lightingclass.cpp" />
     <ClCompile Include="lightshaderclass.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelclass.cpp" />
@@ -113,7 +113,7 @@
     <ClInclude Include="fireshaderclass.h" />
     <ClInclude Include="graphicsclass.h" />
     <ClInclude Include="inputclass.h" />
-    <ClInclude Include="lightclass.h" />
+    <ClInclude Include="lightingclass.h" />
     <ClInclude Include="lightshaderclass.h" />
     <ClInclude Include="modelclass.h" />
     <ClInclude Include="reflectionshaderclass.h" />

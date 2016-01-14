@@ -82,7 +82,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	pixelShaderBuffer = 0;
 
 	// Compile the vertex shader code.
-	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "RefractionVertexShader", "vs_5_0", D3D10_SHADER_ENABLE_STRICTNESS,
+	result = D3DX11CompileFromFile(vsFilename, NULL, NULL, "RefractionVertexShader", "vs_4_0", D3D10_SHADER_ENABLE_STRICTNESS,
 		0, NULL, &vertexShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 	{
@@ -101,7 +101,7 @@ bool RefractionShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WC
 	}
 
 	// Compile the pixel shader code.
-	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "RefractionPixelShader", "ps_5_0", D3D10_SHADER_ENABLE_STRICTNESS,
+	result = D3DX11CompileFromFile(psFilename, NULL, NULL, "RefractionPixelShader", "ps_4_0", D3D10_SHADER_ENABLE_STRICTNESS,
 		0, NULL, &pixelShaderBuffer, &errorMessage, NULL);
 	if (FAILED(result))
 	{

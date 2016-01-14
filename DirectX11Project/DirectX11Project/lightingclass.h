@@ -1,14 +1,14 @@
-#ifndef _LIGHTCLASS_H_
-#define _LIGHTCLASS_H_
+#ifndef _LightingClass_H_
+#define _LightingClass_H_
 
 #include <d3dx10math.h>
 
-class LightClass
+class LightingClass
 {
 public:
-	LightClass();
-	LightClass(const LightClass&);
-	~LightClass();
+	LightingClass();
+	LightingClass(const LightingClass&);
+	~LightingClass();
 
 	void SetAmbientColor(float, float, float, float);
 	void SetDiffuseColor(float, float, float, float);
